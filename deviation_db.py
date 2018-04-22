@@ -61,10 +61,10 @@ class DeviationComment:
         c = c.strip()
 
         tokens = c.split(self._sep)
-        self._standard = tokens[1]
-        self._rule_id = tokens[2]
-        self._deviation_id = tokens[3]
-        self._desc = tokens[4]
+        self._standard = tokens[1].strip()
+        self._rule_id = tokens[2].strip()
+        self._deviation_id = tokens[3].strip()
+        self._desc = tokens[4].strip()
 
     def getStandard(self):
         return self._standard

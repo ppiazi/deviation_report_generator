@@ -20,29 +20,44 @@ from mailmerge import MailMerge
 
 class DeviationReport:
     def __init__(self):
-        pass
+        self._title = ""
+        self._writer = ""
+        self._reviewer = ""
+        self._approver = ""
+
+    def setReportInfo(self, report_info):
+        self._title = report_info['title']
+        self._writer = report_info['writer']
+        self._reviewer = report_info['reviewer']
+        self._approver = report_info['approver']
 
     def makeReport(self, db, template):
-        document = MailMerge(template)
 
         for rule_key in db.keys():
             print(rule_key)
             for did in db[rule_key].keys():
+                document = MailMerge(template)
                 print(did)
-                dev_list = []
+                dr_list = []
                 i = 1
                 for item in db[rule_key][did]:
                     d = {}
-                    d['ListNo'] = i
+                    d['ListNo'] = str(i)
                     d['FileName'] = item[1]
-                    d['FileLine'] = item[2]
-                    #t = catex.catex(d['FileName'])
-                    #d['FileContent'] = t.catex(d['FileLine'], 1, 1)
-                    #t.close()
-                    dev_list.append(d)
+                    d['FileLine'] = str(item[2])
+                    t = catex.catex(d['FileName'])
+                    d['FileContent'] = t.catex(item[2], 1, 1)
+                    t.close()
+                    dr_list.append(d)
                     i = i + 1
 
-                document.merge(DR_Title=rule_key, DR_Reviewer="Joohyun", DR_Approver="Lee")
-                #document.merge_rows("ListNo", dev_list)
+
+                document.merge(DR_Rule_Title=rule_key,
+                               DR_Rule_Category=did,
+                               DR_Reviewer=self._reviewer,
+                               DR_Approver=self._approver,
+                               DR_Writer=self._writer)
+                document.merge_rows("ListNo", dr_list)
                 document.write("result_%s.docx" % (rule_key + did))
+                document.close()
 

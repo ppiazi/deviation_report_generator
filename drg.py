@@ -39,6 +39,8 @@ class DeviationReportGenerator:
                 full_file_path = os.path.join(root, afile)
                 self._searchPatternInFile(full_file_path)
 
+        self.drd.printAll()
+
     def _searchPatternInFile(self, afile):
         print("Reading %s " % (afile))
         f = open(afile, "r", encoding="utf-8")
@@ -56,9 +58,10 @@ class DeviationReportGenerator:
 
             i = i + 1
 
-        self.drd.printAll()
+    def makeReport(self, standard, template, report_info):
         dr = deviation_report.DeviationReport()
-        dr.makeReport(self.drd.getDB("MISRA C:2012"), "template.docx")
+        dr.setReportInfo(report_info)
+        dr.makeReport(self.drd.getDB(standard), template)
 
 
     def _findDeviationLine(self, lines):
@@ -99,6 +102,16 @@ if __name__ == "__main__":
         print_usage()
         os._exit(-1)
 
+    report_info = {}
+    report_info["title"] = "이주현"
+    report_info["writer"] = "이주현"
+    report_info["reviewer"] = "홍길동"
+    report_info["approver"] = "신사임당"
+
     drg = DeviationReportGenerator(p_folder)
 
     drg.searchDR()
+
+    drg.makeReport("MISRA C:2012", "template.docx", report_info)
+
+
